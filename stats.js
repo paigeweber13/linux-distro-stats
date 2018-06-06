@@ -19,6 +19,20 @@ $( '#test-button' ).click(function() {
   getReviewsPagesHtml(distrosToCheck);
 });
 
+$('#test-python-button').click(function () {
+  $.ajax({
+    url: stats.py,
+    method: 'GET',
+    success: function (data) {
+      console.log('success! Data is printing below.');
+      console.log(data);
+    },
+    error: function (data) {
+      console.log('Failed to get anything from the stats.py file');
+    },
+  });
+});
+
 /**
  * uses a CORS-anywhere proxy because chrome blocks some CORS requests
  * passes distroName as a parameter so that we can create a map later. This must
