@@ -19,15 +19,15 @@ $( '#test-button' ).click(function() {
   getReviewsPagesHtml(distrosToCheck);
 });
 
-$('#test-python-button').click(function () {
+$('#test-python-button').click(function() {
   $.ajax({
-    url: stats.py,
+    url: 'stats.py',
     method: 'GET',
-    success: function (data) {
+    success: function(data) {
       console.log('success! Data is printing below.');
       console.log(data);
     },
-    error: function (data) {
+    error: function(data) {
       console.log('Failed to get anything from the stats.py file');
     },
   });
