@@ -21,7 +21,7 @@ $( '#test-button' ).click(function() {
 
 $('#test-python-button').click(function() {
   $.ajax({
-    url: 'scripts/stats.py',
+    url: 'python/stats.py',
     method: 'GET',
     success: function(data) {
       console.log('success! Data is printing below.');
@@ -35,8 +35,9 @@ $('#test-python-button').click(function() {
 
 /**
  * uses a CORS-anywhere proxy because chrome blocks some CORS requests
- * passes distroName as a parameter so that we can create a map later. This must
- * be done here and not in the parent function because these fire
+ *
+ * passes distroName as a parameter so that we can create an object later. This
+ * must be done here and not in the parent function because these fire
  * asynchronously. This means that the parent function will complete the for
  * loop iterating through distribution names before any of the html data comes
  * back. Therefore, when we try to use the distro name from the for loop, we
@@ -63,7 +64,7 @@ function getHtml(distroName, url) {
         );
       },
       error: function(data) {
-        reject('Failed to get review page html for ' + distroName)
+        reject('Failed to get review page html for ' + distroName);
       },
     });
   });
