@@ -53,13 +53,9 @@ def extractReviewText(htmlArray):
 
 
 # main
-# def main():
-#     """ Main entry point of the app """
-#     print("""hello world! This is the python implementation of the
-#         linux-distro-stats tool.""")
-
+def main():
+    return extractReviewText(getReviewsPagesHtml(distrosToCheck))
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
-    # main()
-    extractReviewText(getReviewsPagesHtml(distrosToCheck))
+    main()
