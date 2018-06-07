@@ -21,7 +21,7 @@ $( '#test-button' ).click(function() {
 
 $('#test-python-button').click(function() {
   $.ajax({
-    url: 'stats.py',
+    url: 'scripts/stats.py',
     method: 'GET',
     success: function(data) {
       console.log('success! Data is printing below.');
