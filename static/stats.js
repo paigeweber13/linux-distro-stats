@@ -19,19 +19,19 @@ $( '#test-button' ).click(function() {
   getReviewsPagesHtml(distrosToCheck);
 });
 
-$('#test-python-button').click(function() {
-  $.ajax({
-    url: 'python/stats.py',
-    method: 'GET',
-    success: function(data) {
-      console.log('success! Data is printing below.');
-      console.log(data);
-    },
-    error: function(data) {
-      console.log('Failed to get anything from the stats.py file');
-    },
-  });
-});
+// $('#test-python-button').click(function() {
+//   $.ajax({
+//     url: 'python/stats.py',
+//     method: 'GET',
+//     success: function(data) {
+//       console.log('success! Data is printing below.');
+//       console.log(data);
+//     },
+//     error: function(data) {
+//       console.log('Failed to get anything from the stats.py file');
+//     },
+//   });
+// });
 
 /**
  * uses a CORS-anywhere proxy because chrome blocks some CORS requests
