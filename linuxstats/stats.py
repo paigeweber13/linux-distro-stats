@@ -38,7 +38,7 @@ def get_reviews_page_html(distro_name):
     review_page_html = urllib.request.urlopen(REVIEW_PAGE_BASE_URL + distro_name)
     return review_page_html
 
-def extractReviewText(review_page_html):
+def extract_review_text(review_page_html):
     soup = BeautifulSoup(review_page_html, "html.parser")
     review_cells = soup.find_all(is_review_cell)
     reviews_text = ''
@@ -46,14 +46,15 @@ def extractReviewText(review_page_html):
         cell.form.decompose()
         reviews_text += cell.text
         reviews_text += ' '
-    reviews_text = reviews_text.replace('\n', ' ')
-    reviews_text = reviews_text.replace('\r', ' ')
+    # get rid of punctuation
     reviews_text = reviews_text.replace('.', ' ')
     reviews_text = reviews_text.replace('(', ' ')
     reviews_text = reviews_text.replace(')', ' ')
     reviews_text = reviews_text.replace(',', ' ')
     reviews_text = reviews_text.replace('!', ' ')
-    reviews_text = reviews_text.replace(',', ' ')
+    reviews_text = reviews_text.replace('?', ' ')
+    #get rid of extra whitespace
+    reviews_text = ' '.join(reviews_text.split())
 
     # html = htmlDictionary['slackware'].read()
     # html = htmlDictionary['slackware']
@@ -67,7 +68,7 @@ def extractReviewText(review_page_html):
 def main():
     #print(os.environ['PYTHONPATH'].split(os.pathsep))
     return "<body>hello from python</body>"
-    #return extractReviewText(get_reviews_page_html(distros_to_check[0]))
+    #return extract_review_text(get_reviews_page_html(distros_to_check[0]))
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
