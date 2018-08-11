@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 
-import linuxstats.stats
+import linuxstats.test_page
 
 app = Flask(__name__)
 
@@ -8,9 +8,9 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route("/distro-stats")
-def get_distro_stats():
-    return linuxstats.stats.main()
+@app.route("/test-page")
+def display_test_page():
+    return linuxstats.test_page.main()
 
 # @app.route("/js/<script_name>")
 # def resolve(script_name):
