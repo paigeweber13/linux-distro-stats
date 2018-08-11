@@ -10,7 +10,7 @@ def index():
 
 @app.route("/distro-stats")
 def get_distro_stats():
-    return stats.main()
+    return linuxstats.stats.main()
 
 # @app.route("/js/<script_name>")
 # def resolve(script_name):
