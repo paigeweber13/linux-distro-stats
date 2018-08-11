@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 
-import stats
+import linuxstats.stats
 
 app = Flask(__name__)
 
