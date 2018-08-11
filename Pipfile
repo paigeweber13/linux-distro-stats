@@ -8,6 +8,7 @@ flask = "*"
 "beautifulsoup4" = "*"
 
 [dev-packages]
+pytest-watch = "*"
 
 [requires]
 python_version = "3.6"
