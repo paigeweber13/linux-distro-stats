@@ -12,17 +12,6 @@ LINUX_DISTROS = [Distro('slackware')]
 
 ### functions ###
 # Reviews
-def is_review_cell(tag):
-    """ checks if a tag is a review cell with certain attributes that are
-    unique to review cells on distrowatch.com
-
-    Args:
-        tag (BeautifulSoup.tag)
-    Returns:
-        bool:
-    """
-    return tag.name == 'td' and tag.has_attr('width') and tag['width'] == '70%'
-
 def get_reviews_page_html_soup(distro_name):
     """ gets html for distrowatch.com review pages for a list of linux distros
 
@@ -37,6 +26,17 @@ def get_reviews_page_html_soup(distro_name):
     review_page_html = urllib.request.urlopen(REVIEW_PAGE_BASE_URL + distro_name)
     soup = BeautifulSoup(review_page_html, 'html.parser')
     return soup
+
+def is_review_cell(tag):
+    """ checks if a tag is a review cell with certain attributes that are
+    unique to review cells on distrowatch.com
+
+    Args:
+        tag (BeautifulSoup.tag)
+    Returns:
+        bool:
+    """
+    return tag.name == 'td' and tag.has_attr('width') and tag['width'] == '70%'
 
 def extract_review_text(review_page_soup):
     """ gets review text cells from plaintext html and combines all the review
