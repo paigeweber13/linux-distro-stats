@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" tests stats functions 
+""" tests stats functions
 
 does NOT test getting html from the internet"""
 
@@ -20,7 +20,7 @@ class StatsTestCase(unittest.TestCase):
         #self.test_distro = Distro(TEST_DISTRIBUTION_NAME)
         #self.reviews_page_html = linuxstats.stats.get_reviews_page_html(
         #    self.test_distro.name)
-        self.html_doc = """
+        self.test_review_page_html = """
             <html>
                 <head>
                     <title>
@@ -53,14 +53,18 @@ class StatsTestCase(unittest.TestCase):
             </body>
             </html>
             """
-        self.soup = BeautifulSoup(self.html_doc, 'html.parser')
+        self.soup = BeautifulSoup(self.test_review_page_html, 'html.parser')
         #self.test_distro = linuxstats.distro.Distro(TEST_DISTRIBUTION_NAME)
 
     def test_is_review_cell(self):
+        """ tests if our function to find cells that contain review text works
+        """
         self.assertTrue(linuxstats.stats.is_review_cell(self.soup.td))
 
     def test_extract_review_text(self):
-        expected_text = """ This is my review text Lorem ipsum dolor sit amet  
+        """ tests if we can get multiple reviews and properly eliminate
+        unnecessary whitespace and punctuation """
+        expected_text = """ This is my review text Lorem ipsum dolor sit amet
                         consectetur adipiscing elit Vestibulum lacinia tortor
                         sed erat suscipit pharetra Aliquam  tincidunt elementum
                         dapibus Quisque ut  vulputate et nibh Duis ultricies a
@@ -73,12 +77,13 @@ class StatsTestCase(unittest.TestCase):
                         Nulla at ante id dolor gravida porttitor ut sodales
                         odio """
         expected_text = ' '.join(expected_text.split())
-        actual_text = linuxstats.stats.extract_review_text(self.html_doc)
+        actual_text = linuxstats.stats.extract_review_text(
+            self.soup)
         print('text we got:')
         print(actual_text)
         print('text we expected:')
         print(expected_text)
-        self.assertEquals(actual_text, expected_text)
+        self.assertEqual(actual_text, expected_text)
 
 if __name__ == '__main__':
     unittest.main()
