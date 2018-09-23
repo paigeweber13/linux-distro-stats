@@ -1,0 +1,53 @@
+{
+  "easy": {
+    "for": [
+      "easy",
+      "ease",
+      "works",
+      "just works",
+      "flawless",
+      "simple",
+      "user-friendly",
+      "sane"
+    ],
+    "against": [
+      "hard",
+      "hassle"
+    ]
+  },
+  "reliable": {
+    "for": [
+      "reliable",
+      "stable"
+    ],
+    "against": [
+      "unreliable",
+      "unstable",
+      "buggy",
+      "fail",
+      "broken"
+    ]
+  },
+  "fast": {
+    "for": [
+      "fast",
+      "light",
+      "smooth"
+    ],
+    "against": [
+      "slow",
+      "heavy",
+      "bloated",
+      "unresponsive"
+    ]
+  },
+  "customizable":{
+    "for": [
+      "customizable",
+      "flexible",
+      "flexibility"
+    ],
+    "against": [
+    ]
+  }
+}
