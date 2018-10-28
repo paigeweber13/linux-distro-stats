@@ -21,6 +21,7 @@ class StatsTestCase(unittest.TestCase):
         #self.test_distro = Distro(TEST_DISTRIBUTION_NAME)
         #self.reviews_page_html = linuxstats.stats.get_reviews_page_html(
         #    self.test_distro.name)
+        self.maxDiff = None
         self.test_review_page_html = """
             <html>
                 <head>
@@ -29,7 +30,7 @@ class StatsTestCase(unittest.TestCase):
                     </title>
                 </head>
             <body>
-                <tr>
+                <tr style="outline: thin solid black">
                     <td width="30%" style="border:0" valign="top">
                         <b>Version:</b> 14.2<br><b>Rating:</b>
                         10<br><b>Date:</b> 2018-08-10<br><b>Votes:</b>
@@ -46,7 +47,7 @@ class StatsTestCase(unittest.TestCase):
                         </form>
                     </td>
                 </tr>
-                <tr>
+                <tr style="outline: thin solid black">
                     <td width="30%" style="border:0" valign="top">
                         <b>Version:</b> current<br><b>Rating:</b>
                         10<br><b>Date:</b> 2018-08-01<br><b>Votes:</b>
@@ -92,38 +93,35 @@ class StatsTestCase(unittest.TestCase):
         self.main_page_soup = BeautifulSoup(self.test_main_page_html,
             'html.parser')
 
-    def test_is_review_cell(self):
-        """ tests if our function to find cells that contain review text works
-        self.review_page_soup.find_all('td') finds all td tags and returns an array of
-        them. Using index one, we check to see if the second td tag is a review
-        cell, which it is. This can be verified by checking the html above
-        """
-        cell = self.review_page_soup.find_all('td')[1]
-        self.assertTrue(linuxstats.stats.is_review_cell(cell))
+    def test_is_review_row(self):
+        row = self.review_page_soup.find_all('tr')[1]
+        self.assertTrue(linuxstats.stats.is_review_row(row))
 
-    def test_extract_review_text(self):
+    def test_extract_reviews(self):
         """ tests if we can get multiple reviews and properly eliminate
         unnecessary whitespace and punctuation """
-        expected_text = """ This is my review text Lorem ipsum dolor sit amet
+        expected_dict = {date(2018, 8, 10): ' '.join("""
+                        This is my review text Lorem ipsum dolor sit amet
                         consectetur adipiscing elit Vestibulum lacinia tortor
                         sed erat suscipit pharetra Aliquam  tincidunt elementum
                         dapibus Quisque ut  vulputate et nibh Duis ultricies a
-                        augue eu dictum ' This is a different review Duis at
-                        tempor lectus Sed at aliquam lorem vitae suscipit ex
-                        Praesent at lorem est  Ut sagittis enim sollicitudin
-                        aliquet ullamcorper In quis velit nec metus tempus
-                        pellentesque  Phasellus eget mauris porta vulputate
-                        ex nec venenatis lorem  Morbi vel fringilla enim
-                        Nulla at ante id dolor gravida porttitor ut sodales
-                        odio """
-        expected_text = ' '.join(expected_text.split())
-        actual_text = linuxstats.stats.extract_review_text(
+                        augue eu dictum '""".split()),
+                        date(2018, 8, 1): ' '.join("""This is a different
+                        review Duis at tempor lectus Sed at aliquam lorem vitae
+                        suscipit ex Praesent at lorem est  Ut sagittis enim
+                        sollicitudin aliquet ullamcorper In quis velit nec
+                        metus tempus pellentesque Phasellus eget mauris porta
+                        vulputate ex nec venenatis lorem  Morbi vel fringilla
+                        enim Nulla at ante id dolor gravida porttitor ut
+                        sodales odio """.split())}
+
+        actual_dict = linuxstats.stats.extract_reviews(
             self.review_page_soup)
-        print('text we got:')
-        print(actual_text)
-        print('text we expected:')
-        print(expected_text)
-        self.assertEqual(actual_text, expected_text)
+        print('dict we got:')
+        print(actual_dict)
+        print('dict we expected:')
+        print(expected_dict)
+        self.assertEqual(actual_dict, expected_dict)
 
     def test_is_rating_cell(self):
         """ tests if our function to find cells that contain ratings works

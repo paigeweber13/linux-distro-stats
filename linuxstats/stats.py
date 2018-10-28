@@ -38,37 +38,38 @@ def get_main_page_html_soup(distro_name):
     soup = BeautifulSoup(main_page_html, 'html.parser')
     return soup
 
-# Reviews
-def is_review_cell(tag):
-    """ checks if a tag is a review cell with certain attributes that are
-    unique to review cells on distrowatch.com
+# Reviews (and the metrics gained from them)
+def is_review_row(tag):
+    return tag.has_attr('style') and tag['style'] == 'outline: thin solid black'
 
-    Args:
-        tag (BeautifulSoup.tag)
-    Returns:
-        bool:
-    """
-    return tag.name == 'td' and tag.has_attr('width') and tag['width'] == '70%'
-
-def extract_review_text(review_page_soup):
-    """ gets review text cells from plaintext html and combines all the review
-    text into one string """
-    review_cells = review_page_soup.find_all(is_review_cell)
-    reviews_text = ''
-    for cell in review_cells:
-        cell.form.decompose()
-        reviews_text += cell.text
-        reviews_text += ' '
-    # get rid of punctuation
-    reviews_text = reviews_text.replace('.', ' ')
-    reviews_text = reviews_text.replace('(', ' ')
-    reviews_text = reviews_text.replace(')', ' ')
-    reviews_text = reviews_text.replace(',', ' ')
-    reviews_text = reviews_text.replace('!', ' ')
-    reviews_text = reviews_text.replace('?', ' ')
-    #get rid of extra whitespace
-    reviews_text = ' '.join(reviews_text.split())
-    return reviews_text
+def extract_reviews(review_page_soup):
+    # review_cells = review_page_soup.find_all(is_review_cell)
+    review_rows = review_page_soup.find_all(is_review_row)
+    # reviews_text = ''
+    reviews = {}
+    date_regex = re.compile(r"""
+            Date:(?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+)""", re.VERBOSE)
+    for row in review_rows:
+        text = ''.join(row.td.text.split())
+        result = date_regex.search(text)
+        review_date = date(int(result.group('year')),
+                           int(result.group('month')),
+                           int(result.group('day')))
+        # TODO: find a non-destructive way to do this
+        row.td.decompose()
+        row.td.form.decompose()
+        review_text = row.td.text
+        # get rid of punctuation
+        review_text = review_text.replace('.', ' ')
+        review_text = review_text.replace('(', ' ')
+        review_text = review_text.replace(')', ' ')
+        review_text = review_text.replace(',', ' ')
+        review_text = review_text.replace('!', ' ')
+        review_text = review_text.replace('?', ' ')
+        #get rid of extra whitespace
+        review_text = ' '.join(review_text.split())
+        reviews[review_date] = review_text
+    return reviews
 
 # ratings
 def is_rating_cell(tag):
@@ -88,7 +89,7 @@ def extract_ratings(review_page_soup):
         rating_date = date(int(result.group('year')),
                            int(result.group('month')),
                            int(result.group('day')))
-        print(rating_date)
+        # print(rating_date)
         ratings[rating_date] = int(result.group('rating'))
     return ratings
 
@@ -111,9 +112,16 @@ def extract_popularity(main_page_soup):
     result = popularity_regex.search(text)
     print('result')
     print(result)
-    popularity = {'1w':int(result.group('one_week_score')),
-                  '4w':int(result.group('four_week_score')),
-                  '3m':int(result.group('three_month_score')),
-                  '6m':int(result.group('six_month_score')),
-                  '12m':int(result.group('twelve_month_score')), }
+    popularity = {'1w': int(result.group('one_week_score')),
+                  '4w': int(result.group('four_week_score')),
+                  '3m': int(result.group('three_month_score')),
+                  '6m': int(result.group('six_month_score')),
+                  '12m': int(result.group('twelve_month_score')), }
     return popularity
+
+# builds a distro object with all the key statistics
+def build_distro(distro_name):
+    discovered_metrics = {}
+    discovered_metrics['popularity'] = extract_popularity(distro_name)
+    discovered_metrics['ratings'] = extract_ratings(distro_name)
+    return Distro(distro_name, metrics=discovered_metrics)
