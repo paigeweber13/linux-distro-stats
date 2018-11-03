@@ -3,6 +3,7 @@
 
 does NOT test getting html from the internet"""
 
+import pdb
 import unittest
 from datetime import date
 from bs4 import BeautifulSoup
@@ -14,12 +15,14 @@ import linuxstats.distro
 # constants
 TEST_DISTRIBUTION_NAME = 'fakenix'
 
+
 class StatsTestCase(unittest.TestCase):
     """ standard unittest class. See
     https://docs.python.org/3/library/unittest.html """
+
     def setUp(self):
-        #self.test_distro = Distro(TEST_DISTRIBUTION_NAME)
-        #self.reviews_page_html = linuxstats.stats.get_reviews_page_html(
+        # self.test_distro = Distro(TEST_DISTRIBUTION_NAME)
+        # self.reviews_page_html = linuxstats.stats.get_reviews_page_html(
         #    self.test_distro.name)
         self.maxDiff = None
         self.test_review_page_html = """
@@ -42,6 +45,11 @@ class StatsTestCase(unittest.TestCase):
                         sed erat suscipit pharetra? Aliquam (tincidunt)\r
                         elementum dapibus. Quisque ut, vulputate, et nibh.
                         Duis ultricies a augue eu dictum...()?!,'.
+                        For metrics:
+                            sane simple user-friendly hard (score: 2)
+                            unreliable unstable (score -2)
+                            fast heavy (score 0)
+                            customizable (score 1)
                         <br><br><br>
                         <form>
                         </form>
@@ -54,13 +62,19 @@ class StatsTestCase(unittest.TestCase):
                         5<br><br><br>
                     </td>
                     <td width="70%" style="border:0" valign="top">
-                        This is a different review. Duis at tempor lectus. Sed at
-                        aliquam lorem, vitae suscipit ex.  Praesent at lorem est.
-                        Ut sagittis enim sollicitudin aliquet ullamcorper. In quis
-                        velit nec metus tempus pellentesque.  Phasellus eget mauris
-                        porta, vulputate ex nec, venenatis lorem.  Morbi vel
-                        fringilla enim. Nulla at ante id dolor gravida porttitor ut
-                        sodales odio. 
+                        This is a different review. Duis at tempor lectus. Sed
+                        at aliquam lorem, vitae suscipit ex.  Praesent at lorem
+                        est.  Ut sagittis enim sollicitudin aliquet
+                        ullamcorper. In quis velit nec metus tempus
+                        pellentesque.  Phasellus eget mauris porta, vulputate
+                        ex nec, venenatis lorem.  Morbi vel fringilla enim.
+                        Nulla at ante id dolor gravida porttitor ut sodales
+                        odio.
+                        For metrics:
+                            hassle easy ease works flawless (score: 3)
+                            reliable stable buggy fail broken (score -1)
+                            light smooth slow bloated unresponsive (score -1)
+                            flexible flexibility (score 2)
                         <br><br><br>
                         <form>
                         </form>
@@ -69,8 +83,9 @@ class StatsTestCase(unittest.TestCase):
             </body>
             </html>
             """
-        self.review_page_soup = BeautifulSoup(self.test_review_page_html, 'html.parser')
-        #self.test_distro = linuxstats.distro.Distro(TEST_DISTRIBUTION_NAME)
+        self.review_page_soup = BeautifulSoup(self.test_review_page_html,
+                'html.parser')
+        # self.test_distro = linuxstats.distro.Distro(TEST_DISTRIBUTION_NAME)
         self.test_main_page_html = """
             <td class="TablesTitle">
                 <a href="images/fakenix.png">
@@ -79,8 +94,8 @@ class StatsTestCase(unittest.TestCase):
                     align="right">
                 </a>
                 <b>
-                    <a href="dwres.php?resource=popularity">Popularity (hits per
-                    day)</a>:
+                    <a href="dwres.php?resource=popularity">Popularity (hits
+                    per day)</a>:
                 </b>
                 12 months: <b>29</b> (313), 6 months: <b>29</b> (305), 3
                 months: <b>21</b> (307), 4 weeks: <b>25</b> (353), 1 week:
@@ -100,20 +115,26 @@ class StatsTestCase(unittest.TestCase):
     def test_extract_reviews(self):
         """ tests if we can get multiple reviews and properly eliminate
         unnecessary whitespace and punctuation """
-        expected_dict = {date(2018, 8, 10): ' '.join("""
+        expected_dict = {date(2018, 8, 10): """
                         This is my review text Lorem ipsum dolor sit amet
                         consectetur adipiscing elit Vestibulum lacinia tortor
                         sed erat suscipit pharetra Aliquam  tincidunt elementum
                         dapibus Quisque ut  vulputate et nibh Duis ultricies a
-                        augue eu dictum '""".split()),
-                        date(2018, 8, 1): ' '.join("""This is a different
-                        review Duis at tempor lectus Sed at aliquam lorem vitae
-                        suscipit ex Praesent at lorem est  Ut sagittis enim
-                        sollicitudin aliquet ullamcorper In quis velit nec
-                        metus tempus pellentesque Phasellus eget mauris porta
-                        vulputate ex nec venenatis lorem  Morbi vel fringilla
-                        enim Nulla at ante id dolor gravida porttitor ut
-                        sodales odio """.split())}
+                        augue eu dictum ' For metrics: sane simple
+                        user-friendly hard  score: 2  unreliable unstable score
+                        -2  fast heavy  score 0  customizable  score 1
+                        """.split(),
+                        date(2018, 8, 1): """
+                        This is a different review Duis at tempor lectus Sed at
+                        aliquam lorem vitae suscipit ex Praesent at lorem est
+                        Ut sagittis enim sollicitudin aliquet ullamcorper In
+                        quis velit nec metus tempus pellentesque Phasellus eget
+                        mauris porta vulputate ex nec venenatis lorem  Morbi
+                        vel fringilla enim Nulla at ante id dolor gravida
+                        porttitor ut sodales odio For metrics: hassle easy ease
+                        works flawless  score: 3  reliable stable buggy fail
+                        broken score -1  light smooth slow bloated unresponsive
+                        score -1  flexible flexibility  score 2  """.split()}
 
         actual_dict = linuxstats.stats.extract_reviews(
             self.review_page_soup)
@@ -139,13 +160,41 @@ class StatsTestCase(unittest.TestCase):
         self.assertEqual(actual_dict, expected_dict)
 
     def test_extract_popularity(self):
-        expected_dict = {'1w':36, '4w':25, '3m':21, '6m':29, '12m':29}
+        expected_dict = {'1w': 36, '4w': 25, '3m': 21, '6m': 29, '12m': 29}
         actual_dict = linuxstats.stats.extract_popularity(self.main_page_soup)
         print('expected dictionary:')
         print(expected_dict)
         print('actual dictionary:')
         print(actual_dict)
         self.assertEqual(actual_dict, expected_dict)
+
+    def test_build_keyword_metrics(self):
+        expected_dict = {
+                'easy': {
+                        date(2018, 8, 10): 2,
+                        date(2018, 8, 1): 3,
+                    },
+                'reliable': {
+                        date(2018, 8, 10): -2,
+                        date(2018, 8, 1): -1,
+                    },
+                'fast': {
+                        date(2018, 8, 10): 0,
+                        date(2018, 8, 1): -1,
+                    },
+                'customizable': {
+                        date(2018, 8, 10): 1,
+                        date(2018, 8, 1): 2,
+                    },
+                }
+        actual_dict = linuxstats.stats.build_keyword_metrics(
+                self.review_page_soup)
+        print('expected dictionary:')
+        print(expected_dict)
+        print('actual dictionary:')
+        print(actual_dict)
+        self.assertEqual(actual_dict, expected_dict)
+
 
 if __name__ == '__main__':
     unittest.main()
