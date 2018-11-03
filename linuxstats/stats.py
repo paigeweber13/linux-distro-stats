@@ -1,5 +1,7 @@
 # python imports
 from datetime import date
+import json
+import pdb
 import re
 import urllib.request
 
@@ -56,6 +58,9 @@ def extract_reviews(review_page_soup):
                            int(result.group('month')),
                            int(result.group('day')))
         # TODO: find a non-destructive way to do this
+        # actually, is this destructive? This looks like it just destroys
+        # review_rows, not the original review_page_soup, though review_rows
+        # may only be a shallow copy....
         row.td.decompose()
         row.td.form.decompose()
         review_text = row.td.text
@@ -68,8 +73,29 @@ def extract_reviews(review_page_soup):
         review_text = review_text.replace('?', ' ')
         #get rid of extra whitespace
         review_text = ' '.join(review_text.split())
-        reviews[review_date] = review_text
+        reviews[review_date] = review_text.split()
     return reviews
+
+def build_keyword_metrics(review_page_soup):
+    #pdb.set_trace()
+    metrics = {}
+    reviews = extract_reviews(review_page_soup)
+    with open('keywords.json') as keyword_file:
+        keyword_dict = json.load(keyword_file)
+    # TODO: Complexity is 2n^4. Yikes. Make it better.
+    for metric in keyword_dict:
+        metrics[metric] = {}
+        for review_date, review in reviews.items():
+            score = 0
+            for word in review:
+                for keyword in keyword_dict[metric]['for']:
+                    if word == keyword:
+                        score += 1
+                for keyword in keyword_dict[metric]['against']:
+                    if word == keyword:
+                        score -= 1
+            metrics[metric][review_date] = score
+    return metrics
 
 # ratings
 def is_rating_cell(tag):
@@ -121,7 +147,10 @@ def extract_popularity(main_page_soup):
 
 # builds a distro object with all the key statistics
 def build_distro(distro_name):
+    review_page_soup = get_reviews_page_html_soup(distro_name)
+    main_page_soup = get_main_page_html_soup(distro_name)
     discovered_metrics = {}
-    discovered_metrics['popularity'] = extract_popularity(distro_name)
-    discovered_metrics['ratings'] = extract_ratings(distro_name)
+    discovered_metrics['popularity'] = extract_popularity(main_page_soup)
+    discovered_metrics['ratings'] = extract_ratings(review_page_soup)
+    # other metrics go here
     return Distro(distro_name, metrics=discovered_metrics)
