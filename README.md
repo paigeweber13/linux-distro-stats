@@ -9,7 +9,7 @@ There will be no database on the backend (for now).
  - [x] backend functions that get reviews, ratings, and popularity
  - [x] decide on key words to find in reviews (needs review, but an initial
    list has been created)
- - [ ] backend function to find list of words in reviews and track the number
+ - [x] backend function to find list of words in reviews and track the number
    of occurances of each word
  - [ ] create draft of site layout
  - [ ] visualize data with javascript
